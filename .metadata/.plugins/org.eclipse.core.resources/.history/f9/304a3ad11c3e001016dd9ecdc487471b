@@ -1,0 +1,83 @@
+package com.customerManagement.crm.impl;
+
+import com.customerManagement.crm.dto.UserDto;
+import com.customerManagement.crm.entity.Users;
+import com.customerManagement.crm.repository.UsersRepository;
+import com.customerManagement.crm.service.IUserService;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+@AllArgsConstructor
+public class UserServiceImpl implements IUserService {
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private UsersRepository userRepository;
+
+	@Override
+	public void createUser(String mob) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public UserDto fetchUser(String mob) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean updateUser(@Valid UserDto userDto) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean deleteUser(
+			@Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits") String mobileNumber) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public List<UserDto> fetchAllUser() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void createUser1(UserDto dto) {
+
+		if (!dto.getPwd().equals(dto.getConfirmPwd())) {
+			throw new IllegalArgumentException("Passwords do not match");
+		}
+
+		// Map DTO to Entity
+		Users person = new Users();
+		person.setName(dto.getName());
+		person.setEmail(dto.getEmail());
+		person.setMobileNumber(dto.getMobileNumber());
+		person.setRoles(dto.getRoles());
+		person.setAddress(dto.getAddress());
+
+		// 🔐 Encrypt password
+		person.setPwd(passwordEncoder.encode(dto.getPwd()));
+
+		userRepository.save(person);
+	
+
+	}
+
+
+}

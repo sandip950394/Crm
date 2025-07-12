@@ -1,0 +1,32 @@
+package com.customerManagement.crm.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
+
+import com.customerManagement.crm.dto.AddressDto;
+import com.customerManagement.crm.dto.RolesDto;
+import com.customerManagement.crm.dto.UserDto;
+import com.customerManagement.crm.entity.Address;
+import com.customerManagement.crm.entity.Roles;
+import com.customerManagement.crm.entity.Users;
+
+@Mapper(componentModel = "spring")
+public interface UsersMapper {
+
+	UsersMapper INSTANCE = Mappers.getMapper(UsersMapper.class);
+	
+	@Mapping(target = "userId", ignore = true)
+	Users toUserEntity(UserDto userDto);
+
+	UserDto toUserDto(Users users);
+
+	Address toAddressEntity(AddressDto addressDto);
+
+	AddressDto toAddressDto(Address address);
+
+	Roles toRolesEntity(RolesDto rolesDto);
+
+	RolesDto toRolesDto(Roles users);
+
+}

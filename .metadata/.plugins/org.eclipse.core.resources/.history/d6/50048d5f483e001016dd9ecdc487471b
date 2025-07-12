@@ -1,0 +1,27 @@
+package com.customerManagement.crm.service;
+
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.customerManagement.crm.dto.UserDto;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
+
+public interface IUserService {
+
+	void createUser(UserDto dto);
+	
+	void createUserWithDocument(UserDto dto,MultipartFile document);
+	
+	UserDto fetchUser(Integer userId);
+	
+	List<UserDto> fetchAllUser();
+
+	boolean updateUser(@Valid UserDto userDto);
+
+	boolean deleteUser(
+			@Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits") String mobileNumber);
+
+}

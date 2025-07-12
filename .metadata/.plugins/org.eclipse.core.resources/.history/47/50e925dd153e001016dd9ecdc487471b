@@ -1,0 +1,19 @@
+package com.customerManagement.crm.service;
+
+import com.customerManagement.crm.dto.UserDto;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
+
+public interface IUserService {
+	
+	void createUser(String mob);
+	
+	UserDto fetchUser(String mob);
+
+	boolean updateUser(@Valid UserDto userDto);
+
+	boolean deleteUser(
+			@Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits") String mobileNumber);
+	
+}

@@ -1,0 +1,10 @@
+package com.customerManagement.crm.responseDto;
+
+import lombok.Data;
+
+@Data
+public class RolesResponseDto {
+
+	private int roleId;
+
+}

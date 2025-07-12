@@ -1,0 +1,23 @@
+package com.customerManagement.crm.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
+
+import com.customerManagement.crm.dto.UserDto;
+import com.customerManagement.crm.entity.Users;
+
+@Mapper
+public interface UsersMapper {
+	
+	UsersMapper INSTANCE = Mappers.getMapper(UsersMapper.class);
+
+	    Users toEntity(UserDto userDto);
+	    
+	    UserDto toDto(Users users);
+	    
+	
+}
+
+
+
+   

@@ -1,0 +1,131 @@
+package com.customerManagement.crm.controller;
+
+import java.util.List;
+
+import org.hibernate.query.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.customerManagement.crm.constants.UserConstants;
+import com.customerManagement.crm.dto.ErrorResponseDto;
+import com.customerManagement.crm.dto.ResponseDto;
+import com.customerManagement.crm.dto.UserDto;
+import com.customerManagement.crm.service.IUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+
+@Tag(name = "CRUD REST APIs for Customer relationship management", description = "CRUD REST APIs in CRM to CREATE, UPDATE, FETCH AND DELETE user details")
+@RestController
+@RequestMapping(path = "/api", produces = { MediaType.APPLICATION_JSON_VALUE })
+@AllArgsConstructor
+@Validated
+public class UserController {
+
+	private IUserService iUserService;
+
+	@Operation(summary = "Create user REST API", description = "REST API to create new user")
+	@ApiResponses({ @ApiResponse(responseCode = "201", description = "HTTP Status CREATED"),
+			@ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))) })
+	@PostMapping("/create")
+	public ResponseEntity<ResponseDto> createUser(@Valid @RequestBody UserDto userDto) {
+		iUserService.createUser(userDto);
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(new ResponseDto(UserConstants.STATUS_201, UserConstants.MESSAGE_201));
+	}
+
+	@Operation(summary = "Fetch user Details REST API", description = "REST API to fetch user details based on a userid")
+	@ApiResponses({ @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
+			@ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))) })
+	@GetMapping("/fetch")
+	public ResponseEntity<UserDto> fetchUser(@RequestParam Integer userId) {
+
+		UserDto userDto = iUserService.fetchUser(userId);
+		return ResponseEntity.status(HttpStatus.OK).body(userDto);
+	}
+
+	@Operation(summary = "Fetch all users Details REST API", description = "REST API to fetch all users  details")
+	@ApiResponses({ @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
+			@ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))) })
+	@GetMapping("/fetchAll")
+	public ResponseEntity<List<UserDto>> fetchAllUsers() {
+
+		List<UserDto> userDto = iUserService.fetchAllUser();
+		return ResponseEntity.status(HttpStatus.OK).body(userDto);
+	}
+
+	@Operation(summary = "Update user Details REST API", description = "REST API to update user details based on a userid")
+	@ApiResponses({ @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
+			@ApiResponse(responseCode = "417", description = "Expectation Failed"),
+			@ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))) })
+	@PutMapping("/update")
+	public ResponseEntity<ResponseDto> updateUser(@Valid @RequestBody UserDto userDto) {
+		boolean isUpdated = iUserService.updateUser(userDto);
+		if (isUpdated) {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ResponseDto(UserConstants.STATUS_200, UserConstants.MESSAGE_200));
+		} else {
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+					.body(new ResponseDto(UserConstants.STATUS_417, UserConstants.MESSAGE_417_UPDATE));
+		}
+	}
+
+	@Operation(summary = "Delete user Details REST API", description = "REST API to delete user details based on a userid")
+	@ApiResponses({ @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
+			@ApiResponse(responseCode = "417", description = "Expectation Failed"),
+			@ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))) })
+	@DeleteMapping("/delete")
+	public ResponseEntity<ResponseDto> deleteUser(@RequestParam Integer userId) {
+		boolean isDeleted = iUserService.deleteUser(userId);
+		if (isDeleted) {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ResponseDto(UserConstants.STATUS_200, UserConstants.MESSAGE_200));
+		} else {
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+					.body(new ResponseDto(UserConstants.STATUS_417, UserConstants.MESSAGE_417_DELETE));
+		}
+	}
+
+	// document upload api
+	@PostMapping(value = "/createWithDocument", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<ResponseDto> createUserWithDocument(@RequestPart("user") @Valid UserDto userDto,
+			@RequestPart("document") MultipartFile document) {
+
+		iUserService.createUserWithDocument(userDto, document);
+
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(new ResponseDto(UserConstants.STATUS_201, UserConstants.MESSAGE_201));
+
+	}
+	
+	//using pagination,sorting
+	@Operation(summary = "Fetch all users Details with pagination REST API", description = "REST API to fetch all users with pagination details")
+	@ApiResponses({ @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
+			@ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))) })
+	@GetMapping("/fetchAllWithPagination")
+	public Page<UserDto> fetchAllUsersWithPagination(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+ 
+		return (Page) iUserService.fetchAllUserWithPagination(page, size, sortBy);;
+	}
+
+}

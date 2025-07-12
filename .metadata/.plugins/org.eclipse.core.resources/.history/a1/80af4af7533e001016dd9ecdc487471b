@@ -1,0 +1,36 @@
+package com.customerManagement.crm.controller;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.customerManagement.crm.dto.UserDto;
+import com.customerManagement.crm.service.IUserService;
+import com.customerManagement.crm.utils.PdfReportGenerator;
+
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+
+@RestController
+@RequestMapping(path = "/api", produces = { MediaType.APPLICATION_JSON_VALUE })
+@AllArgsConstructor
+@Validated
+public class ReportGenerationController {
+
+	@Autowired
+	private IUserService iUserService;
+
+	@GetMapping("/generateReport/pdf")
+	public void exportToPDF(HttpServletResponse response) throws IOException {
+
+		List<UserDto> userDtoList = iUserService.fetchAllUser();
+		PdfReportGenerator.generateCustomerPdf(userDtoList, response);
+	}
+
+}

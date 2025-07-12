@@ -1,0 +1,38 @@
+package com.customerManagement.crm.mapper;
+
+import com.customerManagement.crm.dto.AddressDto;
+import com.customerManagement.crm.dto.RolesDto;
+import com.customerManagement.crm.dto.UserDto;
+import com.customerManagement.crm.entity.Address;
+import com.customerManagement.crm.entity.Roles;
+import com.customerManagement.crm.entity.Users;
+
+public class UserMapper{
+
+
+	
+	public static UserDto toUserDto(Users users) {
+		UserDto userdto = new UserDto();
+		userdto.setName(users.getName());
+		userdto.setUserId(users.getUserId());
+		userdto.setEmail(users.getEmail());
+		userdto.setMobileNumber(users.getMobileNumber());
+		userdto.setRolesDto();
+		userdto.getAddressDto( toAddressDto(users.getRoles()) );
+		return userdto;
+	}
+	
+	public static AddressDto toAddressDto(Address address)
+	{
+		AddressDto addressDto = new AddressDto();
+		return addressDto;
+	}
+	
+	
+	public static RolesDto toRolesDto(Roles roles)
+	{
+		RolesDto rolesDto = new RolesDto();
+		return rolesDto;
+	}
+
+}

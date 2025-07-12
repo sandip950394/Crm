@@ -1,0 +1,5 @@
+package com.customerManagement.crm.repository;
+
+public interface RolesRepository {
+
+}

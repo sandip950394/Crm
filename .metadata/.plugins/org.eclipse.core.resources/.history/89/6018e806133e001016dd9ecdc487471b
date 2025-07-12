@@ -1,0 +1,5 @@
+package com.customerManagement.crm.dto;
+
+public class RolesDto {
+
+}

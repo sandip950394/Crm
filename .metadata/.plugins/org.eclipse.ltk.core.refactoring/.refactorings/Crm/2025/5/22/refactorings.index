@@ -1,0 +1,24 @@
+1748685435151	Rename resource 'application.yml'
+1748686541294	Rename package 'com.eazybytes.loans'
+1748686572418	Rename package 'com.eazybytes.loans.audit'
+1748686587667	Rename package 'com.eazybytes.loans.constants'
+1748686603278	Rename package 'com.eazybytes.loans.controller'
+1748686619126	Rename package 'com.eazybytes.loans.dto'
+1748686634396	Rename package 'com.eazybytes.loans.entity'
+1748686650120	Rename package 'com.eazybytes.loans.exception'
+1748686663747	Rename package 'com.eazybytes.loans.mapper'
+1748686680667	Rename package 'com.eazybytes.loans.repository'
+1748686696822	Rename package 'com.eazybytes.loans.service'
+1748686714198	Rename package 'com.eazybytes.loans.service.impl'
+1748689684829	Rename package 'com.eazybytes.eazyschool.annotation'
+1748689769680	Rename package 'com.eazybytes.eazyschool.validations'
+1748690540182	Delete element
+1748690547385	Delete element
+1748690555651	Delete element
+1748690566766	Delete element
+1748691679741	Rename type 'LoansConstants'
+1748691959462	Rename type 'PersonDto'
+1748693357612	Rename package 'com.eazybytes.loans.audit'
+1748709646143	Copy package
+1748709696874	Delete elements
+1748711262373	Delete element

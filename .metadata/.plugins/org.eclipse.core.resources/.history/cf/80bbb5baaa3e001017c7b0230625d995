@@ -1,0 +1,13 @@
+package com.customerManagement.crm.impl;
+
+import org.springframework.stereotype.Service;
+
+import com.customerManagement.crm.service.IAuditLog;
+
+import lombok.Data;
+
+@Service
+@Data
+public class IAuditLogImpl implements IAuditLog{
+
+}

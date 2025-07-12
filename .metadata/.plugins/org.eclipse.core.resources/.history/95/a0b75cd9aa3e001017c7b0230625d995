@@ -1,0 +1,5 @@
+package com.customerManagement.crm.service;
+
+public interface IAuditLog {
+
+}

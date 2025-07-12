@@ -1,0 +1,176 @@
+package com.customerManagement.crm.impl;
+
+import com.customerManagement.crm.dto.UserDto;
+import com.customerManagement.crm.entity.Address;
+import com.customerManagement.crm.entity.Roles;
+import com.customerManagement.crm.entity.Users;
+import com.customerManagement.crm.exception.ResourceNotFoundException;
+import com.customerManagement.crm.mapper.UserMapper;
+import com.customerManagement.crm.repository.AddressRepository;
+import com.customerManagement.crm.repository.RolesRepository;
+import com.customerManagement.crm.repository.UsersRepository;
+import com.customerManagement.crm.service.IUserService;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.query.Page;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+@Service
+@AllArgsConstructor
+public class UserServiceImpl implements IUserService {
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private UsersRepository userRepository;
+
+	@Autowired
+	private RolesRepository rolesRepository;
+
+	@Autowired
+	private AddressRepository addressRepository;
+
+	@Override
+	@Transactional
+	public void createUser(UserDto dto) {
+
+		if (!dto.getPwd().equals(dto.getConfirmPwd())) {
+			throw new IllegalArgumentException("Passwords do not match");
+		}
+
+		// Map DTO to Entity
+
+		Roles role = new Roles();
+		role.setRoleName(dto.getRolesDto().getRoleName());
+		role = rolesRepository.save(role);
+
+		Address address = new Address();
+		address.setAddress1(dto.getAddressDto().getAddress1());
+		address.setAddress2(dto.getAddressDto().getAddress2());
+		address.setCity(dto.getAddressDto().getCity());
+		address.setState(dto.getAddressDto().getState());
+		address.setZipCode(dto.getAddressDto().getZipCode());
+		address = addressRepository.save(address);
+
+		Users user = new Users();
+		user.setName(dto.getName());
+		user.setEmail(dto.getEmail());
+		user.setMobileNumber(dto.getMobileNumber());
+		user.setRoles(role);
+		user.setAddress(address);
+		user.setConfirmEmail(dto.getEmail());
+		user.setConfirmPwd(dto.getConfirmPwd());
+
+		// 🔐 Encrypt password
+		user.setPwd(passwordEncoder.encode(dto.getPwd()));
+
+		userRepository.save(user);
+
+	}
+
+	@Override
+	public UserDto fetchUser(Integer userId) {
+
+		Users users = userRepository.findById(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("User", "UserId", userId.toString()));
+		return UserMapper.toUserDto(users);
+	}
+
+	@Override
+	public boolean updateUser(@Valid UserDto userDto) {
+
+		Users users = userRepository.findById(userDto.getUserId())
+				.orElseThrow(() -> new ResourceNotFoundException("User", "UserId", "NA"));
+
+		Roles role = users.getRoles();
+		role.setRoleName(userDto.getRolesDto().getRoleName());
+
+		Address address = users.getAddress();
+		address.setAddress1(userDto.getAddressDto().getAddress1());
+		address.setAddress2(userDto.getAddressDto().getAddress2());
+		address.setCity(userDto.getAddressDto().getCity());
+		address.setState(userDto.getAddressDto().getState());
+		address.setZipCode(userDto.getAddressDto().getZipCode());
+
+		users.setName(userDto.getName());
+		users.setEmail(userDto.getEmail());
+		users.setMobileNumber(userDto.getMobileNumber());
+		users.setRoles(role);
+		users.setAddress(address);
+		users.setConfirmEmail(userDto.getEmail());
+		users.setConfirmPwd(userDto.getConfirmPwd());
+
+		// 🔐 Encrypt password
+		// users.setPwd(passwordEncoder.encode(dto.getPwd()));
+
+		return userRepository.save(users) != null ? true : false;
+	}
+
+	@Override
+	public boolean deleteUser(Integer userId) {
+		Users users = userRepository.findById(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("User", "UserId", userId.toString()));
+		userRepository.deleteById(userId);
+		return true;
+	}
+
+	@Override
+	public List<UserDto> fetchAllUser() {
+		List<UserDto> listDto = new ArrayList<>();
+
+		List<Users> lUser = userRepository.findAll();
+		if (lUser.size() > 0 && !lUser.isEmpty()) {
+			for (Users user : lUser) {
+				listDto.add(UserMapper.toUserDto(user));
+			}
+			return listDto;
+		} else {
+			new ResourceNotFoundException("User", "UserId", "NA");
+		}
+		return listDto;
+
+	}
+
+	@Override
+	public void createUserWithDocument(UserDto dto, MultipartFile document) {
+
+		// Save file
+		try {
+			this.createUser(dto);
+			String uploadDir = "C:/Users/sandi/Documents/";
+			File uploadFolder = new File(uploadDir);
+			if (!uploadFolder.exists()) {
+				uploadFolder.mkdirs();
+			}
+
+			String filePath = uploadDir + document.getOriginalFilename();
+			document.transferTo(new File(filePath));
+
+		} catch (IOException e) {
+			System.out.println("file not save with given user");
+		}
+
+	}
+
+
+	@Override
+	public org.springframework.data.domain.Page<Users> fetchAllUserWithPagination(int page, int size, String sortBy) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+		return userRepository.findAll(pageable);
+	}
+
+}

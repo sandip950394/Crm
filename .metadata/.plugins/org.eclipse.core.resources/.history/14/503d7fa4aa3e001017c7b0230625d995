@@ -1,0 +1,5 @@
+package com.customerManagement.crm.impl;
+
+public class IAuditLogImpl {
+
+}

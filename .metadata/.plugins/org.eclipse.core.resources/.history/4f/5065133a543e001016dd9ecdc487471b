@@ -1,0 +1,35 @@
+package com.customerManagement.crm.utils;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
+import com.customerManagement.crm.dto.UserDto;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+public class CsvExportService {
+	
+	 public static void writeCustomersToCsv(HttpServletResponse response, List<UserDto> customers) throws IOException {
+	        response.setContentType("text/csv");
+	        response.setHeader("Content-Disposition", "attachment; filename=customers.csv");
+
+	        PrintWriter writer = response.getWriter();
+
+	        // CSV Header
+	        writer.println("UserID,Name,Email,Mobile");
+
+	        // CSV Data
+	        for (UserDto customer : customers) {
+	            writer.printf("%d,%s,%s,%s%n",
+	                    customer.getUserId(),
+	                    customer.getName(),
+	                    customer.getEmail(),
+	                    customer.getMobileNumber());
+	        }
+
+	        writer.flush();
+	        writer.close();
+	    }
+
+}

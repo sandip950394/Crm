@@ -1,0 +1,51 @@
+package com.customerManagement.crm.mapper;
+
+import com.customerManagement.crm.dto.AddressDto;
+import com.customerManagement.crm.dto.RolesDto;
+import com.customerManagement.crm.dto.UserDto;
+import com.customerManagement.crm.entity.Address;
+import com.customerManagement.crm.entity.Roles;
+import com.customerManagement.crm.entity.Users;
+
+public class UserMapper{
+
+	@Override
+	public Users toUserEntity(UserDto userDto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public static UserDto toUserDto(Users users) {
+		UserDto user = new UserDto();
+		user.setName(users.getName());
+		user.setUserId(user.getUserId());
+		user.set
+		return null;
+	}
+
+	@Override
+	public Address toAddressEntity(AddressDto addressDto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AddressDto toAddressDto(Address address) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Roles toRolesEntity(RolesDto rolesDto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RolesDto toRolesDto(Roles users) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

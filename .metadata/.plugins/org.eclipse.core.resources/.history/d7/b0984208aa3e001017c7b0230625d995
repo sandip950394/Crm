@@ -1,0 +1,38 @@
+package com.customerManagement.crm.audit;
+
+public class AuditAspect {
+	@Autowired
+	private AuditLogRepository auditLogRepository;
+
+	@Pointcut("execution(* com.yourapp.service.*.*(..))")
+	public void serviceMethods() {
+	}
+
+	@AfterReturning(pointcut = "serviceMethods()", returning = "result")
+	public void logAfter(JoinPoint joinPoint, Object result) {
+		String methodName = joinPoint.getSignature().getName();
+		String className = joinPoint.getTarget().getClass().getSimpleName();
+		String username = getCurrentUsername();
+
+		String action = "Executed: " + className + "." + methodName;
+		String details = Arrays.toString(joinPoint.getArgs());
+
+		AuditLog log = new AuditLog();
+		log.setUsername(username);
+		log.setAction(action);
+		log.setMethod(methodName);
+		log.setTimestamp(LocalDateTime.now());
+		log.setDetails(details);
+
+		auditLogRepository.save(log);
+	}
+
+	private String getCurrentUsername() {
+		try {
+			return SecurityContextHolder.getContext().getAuthentication().getName();
+		} catch (Exception e) {
+			return "anonymous";
+		}
+	}
+
+}

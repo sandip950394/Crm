@@ -1,0 +1,73 @@
+package com.customerManagement.crm.security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+@Configuration
+public class ProjectSecurityConfig {
+
+//	@Bean
+//	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+//
+//		http.csrf((csrf) -> csrf.ignoringRequestMatchers("/saveMsg","/api/**"))
+//				.authorizeHttpRequests((requests) -> requests
+//						.requestMatchers("/api/**").permitAll() //Temporory permit for testing purpose
+//						
+////						.requestMatchers("api/create","/api/fetch","api/update","api/delete",/api/createWithDocument).hasAnyRole("ADMIN","MANAGER","USER")
+////						.requestMatchers("/api/generateReport/pdf","api/generateReport/csv").hasAnyRole("MANAGER","ADMIN")
+////						.requestMatchers("/api/auditLog").hasRole("ADMIN")
+//						)
+//				.formLogin(loginConfigurer -> loginConfigurer.loginPage("/login").defaultSuccessUrl("/dashboard")
+//						.failureUrl("/login?error=true").permitAll())
+//				.logout(logoutConfigurer -> logoutConfigurer.logoutSuccessUrl("/login?logout=true")
+//						.invalidateHttpSession(true).permitAll())
+//				.httpBasic(Customizer.withDefaults());
+//
+//		return http.build();
+//	}
+//	
+	
+	@Bean
+	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+
+		http.csrf((csrf) -> csrf.ignoringRequestMatchers("/saveMsg","/api/**"))
+				.authorizeHttpRequests((requests) -> requests
+						.requestMatchers("/api/**").permitAll() //Temporory permit for testing purpose
+						
+//						.requestMatchers("api/create","/api/fetch","api/update","api/delete",/api/createWithDocument).hasAnyRole("ADMIN","MANAGER","USER")
+//						.requestMatchers("/api/generateReport/pdf","api/generateReport/csv").hasAnyRole("MANAGER","ADMIN")
+//						.requestMatchers("/api/auditLog").hasRole("ADMIN")
+						)
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.httpBasic(Customizer.withDefaults())
+				.logout(logout -> logout
+					.logoutUrl("/api/logout")  // RESTful logout URL
+					.logoutSuccessHandler((request, response, authentication) -> {
+						response.setStatus(HttpServletResponse.SC_OK);
+						response.setContentType("application/json");
+						response.getWriter().write("{\"message\": \"Logout successful\"}");
+					})
+					.invalidateHttpSession(true)
+					.clearAuthentication(true)
+				);
+				
+
+		return http.build();
+	}
+
+	
+	
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
+}
